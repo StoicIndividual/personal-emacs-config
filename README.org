@@ -1,5 +1,7 @@
 #+TITLE:My Personal Emacs Config
 [[./img/configScreenCap.png]]
+* Installation
+Move the init.el file to your ~/.emacs.d/ directory (if there is none, just create it, after having installed emacs of course), open emacs, wait for it to download the packages, and done!
 * To-dos [10/10]
 - [X] integrate, some more prefixes
 - [X] consider which key
