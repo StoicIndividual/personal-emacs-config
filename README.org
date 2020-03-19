@@ -1,0 +1,13 @@
+#+TITLE:My Personal Emacs Config
+[[./img/configScreenCap.png]]
+* To-dos [10/10]
+- [X] integrate, some more prefixes
+- [X] consider which key
+- [X] check out sublimity, if not find an alternative to minimap or maybe not
+- [X] install ivy and integrate it with current config
+- [X] decrease delay time of displaying keystrokes in the minibuffer, see magnars' config to see if he has the name of the variable to change
+- [X] find out a better way to source config file without restarting emacs
+- [X] bind a key to open your config file without having to constantly search through your home directory just to open it
+- [X] test the necessity of general.el see if same setup can be duplicated without the use of the package and if it's reliable (speed wise)
+- [X] (define-key key-translation-map (kbd "ESC") (kbd "C-g")) works well, but in gui only (not really an issue but can be confusing in terminal), possible consideration, figure out where to put it in config
+- [X] (define-key query-replace-map [escape] 'quit) <-- use this to get escape to work in the save file dialog, this and the one above call different functions
