@@ -271,6 +271,8 @@
    ;; prefix g
    "g" '(:ignore)
    "gg" 'magit-status
+   "gc" '(:ignore)
+   "gcr" 'magit-init
    ;; miscellaneous
    "SPC" 'execute-extended-command
    "u" 'universal-argument
