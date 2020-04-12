@@ -36,7 +36,12 @@
 
 (require 'package)
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-			 ("melpa-stable" . "https://stable.melpa.org/packages/")))
+			 ("melpa-stable" . "https://stable.melpa.org/packages/")
+			 ("melpa" . "https://melpa.org/packages/"))
+      package-archive-priorities
+      '(("melpa-stable" . 10)
+      	("melpa" . 5)
+      	("gnu" . 0)))
 (setq package-enable-at-startup nil)
 (package-initialize)
 
@@ -129,7 +134,22 @@
 			 (?\[ . ?\])
 			 (?\" . ?\")
 			 )))
+(use-package subword
+  :diminish
+  :config
+  (global-subword-mode 1))
 
+(use-package winner
+  :hook (after-init . winner-mode))
+
+(use-package recentf
+  :hook (after-init . recentf-mode)
+  :custom
+  (recentf-max-menu-items 25)
+  (recentf-max-saved-items 25))
+
+(use-package savehist
+  :hook (after-init . savehist-mode))
 ;;  _____      _                        _ 
 ;; | ____|_  _| |_ ___ _ __ _ __   __ _| |
 ;; |  _| \ \/ / __/ _ \ '__| '_ \ / _` | |
@@ -143,6 +163,9 @@
 ;;  \____\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_|
 ;;                         |___/                                   
 
+(use-package diminish
+  :ensure t)
+
 (use-package almost-mono-themes
   :defer t)
 (use-package spacemacs-common
@@ -150,9 +173,15 @@
   :defer t)
 (use-package color-theme-sanityinc-tomorrow
   :defer t)
+(use-package darktooth-theme
+  :defer t
+  :config
+  (darktooth-modeline))
+(use-package dracula-theme
+  :defer t)
 
 (if (display-graphic-p) 
-    (load-theme 'spacemacs-dark t) 
+    (load-theme 'dracula t) 
   (load-theme 'spacemacs-dark t))
 
 (use-package evil
@@ -165,6 +194,7 @@
   (global-evil-surround-mode 1))
 
 (use-package which-key
+  :diminish
   :custom
   (which-key-use-C-h-commands nil)
   (which-key-echo-keystrokes 0.02)
@@ -174,6 +204,7 @@
 
 (use-package ivy
   :demand t
+  :diminish
   :custom
   (ivy-use-virtual-buffers t)
   (enable-recursive-minibuffers t)
@@ -190,6 +221,7 @@
 
 (use-package counsel
   :after ivy
+  :diminish
   :bind (([remap execute-extended-command] . counsel-M-x)
 	 ([remap find-file] . counsel-find-file)
 	 ([remap describe-function] . counsel-describe-function)
@@ -203,18 +235,44 @@
 	 :map minibuffer-local-map
 	 ("C-r" . counsel-minibuffer-history)))
 
-(use-package sublimity
+;; (use-package sublimity
+;;   :config
+;;   (sublimity-mode 1))
+;; (use-package sublimity-map
+;;   :after sublimity
+;;   :ensure nil
+;;   :custom
+;;   (sublimity-map-size 25)
+;;   (sublimity-map-text-scale -6)
+;;   :config
+;;   (sublimity-map-set-delay nil)
+;;   (add-hook 'sublimity-map-setup-hook (lambda () (setq mode-line-format nil))))
+;; (use-package sublimity-attractive
+;;   :after sublimity
+;;   :ensure nil
+;;   :config
+;;   (sublimity-attractive-hide-modelines))
+
+(use-package writeroom-mode
+  :bind (:map writeroom-mode-map
+	      ("C-M-<" . writeroom-decrease-width)
+	      ("C-M->" . writeroom-increase-width)
+	      ("C-M-=" . writeroom-adjust-width)))
+
+(use-package org-superstar
   :config
-  (sublimity-mode 1))
-(use-package sublimity-map
-  :after sublimity
-  :ensure nil
-  :custom
-  (sublimity-map-size 25)
-  (sublimity-map-text-scale -6)
+  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1))))
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package evil-easymotion
   :config
-  (sublimity-map-set-delay nil)
-  (add-hook 'sublimity-map-setup-hook (lambda () (setq mode-line-format nil))))
+  (evilem-default-keybindings "gs"))
+
+(use-package evil-mc
+  :config
+  (global-evil-mc-mode 1))
 
 (use-package restart-emacs
   :defer t
@@ -232,11 +290,21 @@
   (emmet-preview-default nil))
 
 (use-package yasnippet
+  :diminish yas-minor-mode
   :hook (prog-mode . yas-minor-mode)
   :config
   (yas-reload-all))
 (use-package yasnippet-snippets
   :after yasnippet)
+
+;; (use-package company
+;;   :hook (prog-mode . company-mode)
+;;   :config
+;;   (setq company-idle-delay 0)
+;;   (add-to-list 'company-backends 'company-tern))
+;; (use-package tern
+;;   :hook (js-mode . tern-mode))
+;; (use-package company-tern)
 
 (use-package general
   :preface
@@ -250,28 +318,29 @@
    :keymaps 'override
    :prefix "SPC"
    ;; prefix f
-   "f" '(:ignore)
+   "f" '(:ignore t :which-key "file")
    "ff" 'find-file
    "fs" 'save-buffer
    "fe" 'config-visit
    "fl" 'locate
+   "fr" 'recentf-open-files
    ;; prefix q
-   "q" '(:ignore)
+   "q" '(:ignore t :which-key "quit/session")
    "qq" 'evil-save-and-quit
    "qQ" 'evil-quit-all-with-error-code
    "qr" 'restart-emacs
    ;; prefix c
-   "c" '(:ignore)
+   "c" '(:ignore t :which-key "code")
    "ce" 'eval-buffer
    ;; prefix s
-   "s" '(:ignore)
+   "s" '(:ignore t :which-key "search")
    "sb" 'swiper
    "sm" 'swiper-multi
    "sa" 'swiper-all
    ;; prefix g
-   "g" '(:ignore)
+   "g" '(:ignore t :which-key "git")
    "gg" 'magit-status
-   "gc" '(:ignore)
+   "gc" '(:ignore t :which-key "create")
    "gcr" 'magit-init
    ;; miscellaneous
    "SPC" 'execute-extended-command
@@ -286,7 +355,10 @@
    "t" 'load-theme)
   (general-define-key
    :keymaps 'emmet-mode-keymap
-   "M-E" 'emmet-expand-line)
+   ;; "M-E" 'emmet-expand-line
+   "TAB" 'emmet-expand-line)
   (general-define-key
+   :states 'normal
    :keymaps 'override
-   "C-=")) 
+   "C-+" 'text-scale-increase
+   "C--" 'text-scale-decrease)) 
